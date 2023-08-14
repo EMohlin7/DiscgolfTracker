@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Discgolf Tracker</string>
     <string name="title_measured_throws_screen">Measured Throws</string>
+    <string name="title_start_measure_screen">Start measuring throw</string>
+    <string name="title_measuring_screen">Measuring throw</string>
     <string name="title_history_screen">Match history</string>
     <string name="title_setup_match">Setup match</string>
     <string name="title_match">Match</string>

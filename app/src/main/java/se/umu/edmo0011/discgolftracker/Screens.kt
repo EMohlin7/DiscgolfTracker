@@ -3,15 +3,17 @@ package se.umu.edmo0011.discgolftracker
 import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 
 
 sealed class Screen(val route: String, val scaffoldState: ScaffoldState)
 {
-    object Game : Screen("game", ScaffoldState(topBar = TopBarState(R.string.app_name)))
 
-    object History: Screen("history", ScaffoldState(topBar = TopBarState(title = R.string.title_history_screen)))
 }
+
+
 
 class MatchGraph
 {
@@ -20,8 +22,21 @@ class MatchGraph
         const val route: String = "match graph"
     }
     object NewMatch : Screen("new match", ScaffoldState(topBar = TopBarState(title = R.string.New_match)))
-    object SetupMatch : Screen("Setup match", ScaffoldState(topBar = TopBarState(title = R.string.title_setup_match)))
-    object Match : Screen("match", ScaffoldState(topBar = TopBarState(title = R.string.title_match, actionIcons = List(1){Icons.Default.Check})))
+
+}
+
+class OngoingMatchGraph
+{
+    companion object
+    {
+        const val route: String = "ongoing match graph"
+    }
+    object SetupMatch : Screen("Setup match", ScaffoldState(
+        topBar = TopBarState(title = R.string.title_setup_match, topNavIcon = Icons.Default.ArrowBack)))
+    object Match : Screen("match", ScaffoldState(topBar = TopBarState(
+        title = R.string.title_match,
+        topNavIcon = Icons.Default.Close,
+        actionIcons = List(1){Icons.Default.Check})))
 }
 
 class HistoryGraph
@@ -31,7 +46,8 @@ class HistoryGraph
         const val route: String = "history graph"
     }
     object MatchHistory : Screen("match history", ScaffoldState(topBar = TopBarState(title = R.string.title_history_screen)))
-    object Match : Screen("old match score", ScaffoldState(topBar = TopBarState(title = R.string.title_history_screen)))
+    object Match : Screen("old match score", ScaffoldState(
+        topBar = TopBarState(title = R.string.title_history_screen, topNavIcon = Icons.Default.ArrowBack)))
 }
 
 class MeasuredThrowsGraph
@@ -56,9 +72,14 @@ class MeasureGraph()
         const val route: String = "measure graph"
     }
 
-    object StartMeasure: Screen("start measure", ScaffoldState())
-    object Measuring : Screen("measuring", ScaffoldState())
-    object Save : Screen("save measurement", ScaffoldState(topBar = TopBarState(title = R.string.title_save_throw)))
+    object StartMeasure: Screen("start measure", ScaffoldState(
+        topBar = TopBarState(title = R.string.title_start_measure_screen, topNavIcon = Icons.Default.ArrowBack)
+    ))
+    object Measuring : Screen("measuring", ScaffoldState(
+        topBar = TopBarState(title = R.string.title_measuring_screen, topNavIcon = Icons.Default.ArrowBack)
+    ))
+    object Save : Screen("save measurement", ScaffoldState(
+        topBar = TopBarState(title = R.string.title_save_throw, topNavIcon = Icons.Default.ArrowBack)))
 }
 
 

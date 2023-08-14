@@ -3,6 +3,7 @@ package se.umu.edmo0011.discgolftracker
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //SharedPreferencesHelper.saveList<Match>(this, emptyList(), MATCHES_KEY)
+       // SharedPreferencesHelper.saveList<Match>(this, emptyList(), MATCHES_KEY)
 
         setContent {
             DiscgolfTrackerTheme {
@@ -67,6 +68,7 @@ class MainActivity : ComponentActivity() {
                         floatingActionButton = { Fab(state = scafState.value.fab) }) { pad->
 
                         NavHost(navController = navCon, startDestination = MatchGraph.route) {
+
                             matchGraph(navCon, pad, scafState)
                             historyGraph(navCon, pad, scafState)
                             measuredThrowsGraph(navCon, pad, scafState)
@@ -80,18 +82,30 @@ class MainActivity : ComponentActivity() {
     fun NavGraphBuilder.matchGraph(navCon: NavController, pad: PaddingValues, scafState: MutableState<ScaffoldState>)
     {
         navigation(startDestination = MatchGraph.NewMatch.route, route = MatchGraph.route) {
+
             composable(MatchGraph.NewMatch.route){Screen(MatchGraph.NewMatch, pad, scafState){
                 NewMatchScreen(navCon = navCon)
             } }
 
-            composable(MatchGraph.SetupMatch.route){Screen(MatchGraph.SetupMatch, pad, scafState) {
-                SetupMatchScreen(navCon = navCon)
+            ongoingMatchGraph(navCon, pad, scafState)
+        }
+    }
+
+    fun NavGraphBuilder.ongoingMatchGraph(navCon: NavController, pad: PaddingValues, scafState: MutableState<ScaffoldState>)
+    {
+        navigation(startDestination = OngoingMatchGraph.SetupMatch.route, route = OngoingMatchGraph.route) {
+            composable(OngoingMatchGraph.SetupMatch.route){Screen(OngoingMatchGraph.SetupMatch, pad, scafState) {
+                SetupMatchScreen(navCon = navCon, scafState.value)
             }}
-            composable(MatchGraph.Match.route){Screen(MatchGraph.Match, pad, scafState) {
+            composable(OngoingMatchGraph.Match.route){Screen(OngoingMatchGraph.Match, pad, scafState) {
+                //Disable the back button when in a match
+                BackHandler(enabled = true) {}
+
                 MatchScreen(navCon = navCon, scafState.value, pad)
             }}
         }
     }
+
 
     fun NavGraphBuilder.historyGraph(navCon: NavController, pad: PaddingValues, scafState: MutableState<ScaffoldState>)
     {
@@ -103,7 +117,7 @@ class MainActivity : ComponentActivity() {
             composable(HistoryGraph.Match.route+"/{date}",
                 arguments = listOf(navArgument("date") { type = NavType.LongType })){ backStackEntry->
                 Screen(HistoryGraph.Match, pad, scafState) {
-                    OldMatchScreen(navCon = navCon, pad = pad, date = backStackEntry.arguments?.getLong("date")?:0)
+                    OldMatchScreen(navCon = navCon, pad = pad, scafState.value, date = backStackEntry.arguments?.getLong("date")?:0)
                 }
             }
         }
@@ -124,14 +138,14 @@ class MainActivity : ComponentActivity() {
     {
         navigation(startDestination = MeasureGraph.StartMeasure.route, route = MeasureGraph.route){
             composable(MeasureGraph.StartMeasure.route){Screen(MeasureGraph.StartMeasure, pad, scafState){
-                StartMeasureScreen(navCon = navCon)
+                StartMeasureScreen(navCon = navCon, scafState.value)
             } }
             
             composable(MeasureGraph.Measuring.route){Screen(MeasureGraph.Measuring, pad, scafState){
-                MeasuringScreen(navCon = navCon)
+                MeasuringScreen(navCon = navCon, scafState.value)
             } }
             composable(MeasureGraph.Save.route){Screen(MeasureGraph.Save, pad, scafState) {
-                SaveMeasurementScreen(navCon = navCon)
+                SaveMeasurementScreen(navCon = navCon, scafState.value)
             }}
         }
     }

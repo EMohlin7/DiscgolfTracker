@@ -22,13 +22,16 @@ import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.MeasureGraph
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
 import se.umu.edmo0011.discgolftracker.R
+import se.umu.edmo0011.discgolftracker.ScaffoldState
 import se.umu.edmo0011.discgolftracker.sharedViewModel
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveMeasurementScreen(navCon: NavController)
+fun SaveMeasurementScreen(navCon: NavController, scafState: ScaffoldState)
 {
+    scafState.topBar?.navAction = {navCon.navigateUp()}
+
     val model = navCon.currentBackStackEntry?.sharedViewModel<MeasureViewModel>(navCon, MeasureGraph.route) ?: return
 
     SaveMeasurementForm(model.distance.roundToInt()){distance, disc, course, hole ->

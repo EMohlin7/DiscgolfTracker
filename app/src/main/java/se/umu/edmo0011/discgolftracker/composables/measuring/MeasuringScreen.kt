@@ -8,13 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.MeasureGraph
+import se.umu.edmo0011.discgolftracker.ScaffoldState
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
 import se.umu.edmo0011.discgolftracker.sharedViewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun MeasuringScreen(navCon: NavController)
+fun MeasuringScreen(navCon: NavController, scafState: ScaffoldState)
 {
+    scafState.topBar?.navAction = {navCon.navigateUp()}
     val context = navCon.context
     val model = navCon.currentBackStackEntry?.sharedViewModel<MeasureViewModel>(navCon, MeasureGraph.route) ?: return
     Log.w("Location", "Compose Measurer Screen")

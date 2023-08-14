@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.Hole
 import se.umu.edmo0011.discgolftracker.MatchGraph
+import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
 import se.umu.edmo0011.discgolftracker.ScaffoldState
 import se.umu.edmo0011.discgolftracker.sharedViewModel
 import se.umu.edmo0011.discgolftracker.viewModels.MatchViewModel
@@ -30,13 +31,18 @@ const val TAB_BAR_HEIGHT = 48
 @Composable
 fun MatchScreen(navCon: NavController, scafState: ScaffoldState, pad: PaddingValues)
 {
-    val model = navCon.currentBackStackEntry?.sharedViewModel<MatchViewModel>(navCon, MatchGraph.route) ?: return
-    var pop by remember{mutableStateOf(false)}
+    val model = navCon.currentBackStackEntry?.sharedViewModel<MatchViewModel>(navCon, OngoingMatchGraph.route) ?: return
+    var showSavePop by remember{mutableStateOf(false)}
+    var showStopPop by remember { mutableStateOf(false) }
 
     //Add function to the first action in the top bar
-    scafState.topBar?.actions?.add(0){pop = true}
-    SaveMatchPopup(show = pop, onSave = {model.saveGame(navCon, it)}) {
-        pop = false
+    scafState.topBar?.navAction = {showStopPop = true}
+    scafState.topBar?.actions?.add(0){showSavePop = true}
+    SaveMatchPopup(show = showSavePop, onSave = {model.saveGame(navCon, it)}) {
+        showSavePop = false
+    }
+    StopMatchPopup(show = showStopPop, onStopMatch = { model.stopGame(navCon) }) {
+       showStopPop = false
     }
 
 

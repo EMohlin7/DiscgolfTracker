@@ -8,11 +8,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import se.umu.edmo0011.discgolftracker.HistoryGraph
 import se.umu.edmo0011.discgolftracker.Hole
 import se.umu.edmo0011.discgolftracker.MATCHES_KEY
 import se.umu.edmo0011.discgolftracker.Match
 import se.umu.edmo0011.discgolftracker.MatchGraph
+import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
+import se.umu.edmo0011.discgolftracker.Screen
 import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
 import se.umu.edmo0011.discgolftracker.navigateAndPopUp
 import java.time.LocalDateTime
@@ -35,7 +38,7 @@ class MatchViewModel : ViewModel()
 
     fun onNewMatch(navCon: NavController)
     {
-        navCon.navigate(MatchGraph.SetupMatch.route)
+        navCon.navigate(OngoingMatchGraph.SetupMatch.route)
     }
 
     fun onCreateMatch(navCon: NavController, players: List<String>)
@@ -43,7 +46,7 @@ class MatchViewModel : ViewModel()
         this.players = players
         currentHole = newHole(1)
         holes.add(currentHole)
-        navCon.navigate(MatchGraph.Match.route)
+        navCon.navigate(OngoingMatchGraph.Match.route)
         Log.w("Match", players.toString())
     }
 
@@ -80,6 +83,10 @@ class MatchViewModel : ViewModel()
         return Hole(number, PAR_DEFAULT, players, List<Int>(players.size){0})
     }
 
+    fun stopGame(navCon: NavController)
+    {
+        navCon.navigateAndPopUp(MatchGraph.NewMatch.route, false)
+    }
 
     fun saveGame(navCon: NavController, course: String)
     {

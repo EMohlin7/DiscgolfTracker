@@ -30,14 +30,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.MatchGraph
+import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
+import se.umu.edmo0011.discgolftracker.ScaffoldState
 import se.umu.edmo0011.discgolftracker.sharedViewModel
 import se.umu.edmo0011.discgolftracker.viewModels.MatchViewModel
 
 
 @Composable
-fun SetupMatchScreen(navCon: NavController)
+fun SetupMatchScreen(navCon: NavController, scafState: ScaffoldState)
 {
-    val model = navCon.currentBackStackEntry?.sharedViewModel<MatchViewModel>(navCon,MatchGraph.route) ?: return
+    scafState.topBar?.navAction = {navCon.navigateUp()}
+
+    val model = navCon.currentBackStackEntry?.sharedViewModel<MatchViewModel>(navCon,OngoingMatchGraph.route) ?: return
 
     SetupMatch(){
         model.onCreateMatch(navCon, it)

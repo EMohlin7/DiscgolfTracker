@@ -15,13 +15,15 @@ import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.MeasureGraph
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
 import se.umu.edmo0011.discgolftracker.R
+import se.umu.edmo0011.discgolftracker.ScaffoldState
 import se.umu.edmo0011.discgolftracker.composables.general.DismissableAlert
 import se.umu.edmo0011.discgolftracker.composables.general.createPermissionLauncher
 import se.umu.edmo0011.discgolftracker.sharedViewModel
 
 @Composable
-fun StartMeasureScreen(navCon: NavController)
+fun StartMeasureScreen(navCon: NavController, scafState: ScaffoldState)
 {
+    scafState.topBar?.navAction = {navCon.navigateUp()}
     val context = navCon.context
     val model = navCon.currentBackStackEntry?.sharedViewModel<MeasureViewModel>(navCon, MeasureGraph.route) ?: return
     StartMeasureAlerts(model = model)

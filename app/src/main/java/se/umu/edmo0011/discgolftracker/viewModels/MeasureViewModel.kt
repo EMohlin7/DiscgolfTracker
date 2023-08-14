@@ -67,8 +67,7 @@ class MeasureViewModel() : ViewModel()
 
     fun startGps(context: Context, navCon: NavController, onNoPermission: ()->Unit)
     {
-        gps =
-            GpsHandler.getInstance(context.getSystemService(ComponentActivity.LOCATION_SERVICE) as LocationManager)
+        gps = GpsHandler.getInstance(context.getSystemService(ComponentActivity.LOCATION_SERVICE) as LocationManager)
 
         if(!gps!!.haveGpsPermission(context))
         {
