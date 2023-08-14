@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Discgolf Tracker</string>
+    <string name="title_measured_throws_screen">Measured Throws</string>
+    <string name="title_history_screen">Match history</string>
+    <string name="title_setup_match">Setup match</string>
+    <string name="title_match">Match</string>
+
+    <string name="New_match">New match</string>
+
+    <string name="ok">OK</string>
+
+    <string name="title_gps_not_granted">GPS permission needed</string>
+    <string name="text_gps_not_granted">This feature needs access to the GPS in order to function</string>
+    <string name="title_gps_off">Location access needed</string>
+    <string name="text_gps_off">This feature needs access to the phones location. Please
+        turn on location access in your phone settings</string>
+    <string name="title_no_gps_signal">No GPS signal found</string>
+    <string name="text_no_gps_signal">This feature needs access to GPS but was unable to find a signal,
+    please try again later</string>
+
+    <string name="Save">Save</string>
+    <string name="optional">optional</string>
+    <string name="Distance">Distance</string>
+    <string name="Disc">Disc</string>
+    <string name="Course">Course</string>
+    <string name="Hole">Hole</string>
+
+    <string name="title_save_throw">Save</string>
+
+</resources>
