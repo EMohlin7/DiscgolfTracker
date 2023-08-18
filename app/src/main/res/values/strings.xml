@@ -7,6 +7,8 @@
     <string name="title_setup_match">Setup match</string>
     <string name="title_match">Match</string>
 
+    <string name="Delete">Delete</string>
+
     <string name="New_match">New match</string>
 
     <string name="ok">OK</string>
@@ -28,5 +30,8 @@
     <string name="Hole">Hole</string>
 
     <string name="title_save_throw">Save</string>
+
+    <string name="Players">Players</string>
+    <string name="Duration">Duration</string>
 
 </resources>

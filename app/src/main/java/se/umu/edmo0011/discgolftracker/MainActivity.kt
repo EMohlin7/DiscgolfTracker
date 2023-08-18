@@ -32,6 +32,7 @@ import se.umu.edmo0011.discgolftracker.composables.general.Fab
 import se.umu.edmo0011.discgolftracker.composables.general.TopBar
 import se.umu.edmo0011.discgolftracker.composables.match.MatchScreen
 import se.umu.edmo0011.discgolftracker.composables.match.NewMatchScreen
+import se.umu.edmo0011.discgolftracker.composables.match.PostMatchScreen
 import se.umu.edmo0011.discgolftracker.composables.match.SetupMatchScreen
 import se.umu.edmo0011.discgolftracker.composables.matchHistory.MatchHistoryScreen
 import se.umu.edmo0011.discgolftracker.composables.matchHistory.OldMatchScreen
@@ -50,7 +51,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-       // SharedPreferencesHelper.saveList<Match>(this, emptyList(), MATCHES_KEY)
+        //SharedPreferencesHelper.saveList<Match>(this, emptyList(), MATCHES_KEY)
+        //SharedPreferencesHelper.saveList<Match>(this, emptyList(), THROWS_KEY)
 
         setContent {
             DiscgolfTrackerTheme {
@@ -103,6 +105,10 @@ class MainActivity : ComponentActivity() {
 
                 MatchScreen(navCon = navCon, scafState.value, pad)
             }}
+
+            composable(OngoingMatchGraph.PostMatch.route){Screen(OngoingMatchGraph.PostMatch, pad, scafState){
+                PostMatchScreen(navCon = navCon, pad = pad, scafState = scafState.value)
+            } }
         }
     }
 

@@ -39,6 +39,7 @@ import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
 import se.umu.edmo0011.discgolftracker.THROWS_KEY
 import se.umu.edmo0011.discgolftracker.Throw
 import se.umu.edmo0011.discgolftracker.navigateAndPopUp
+import java.util.Date
 
 /*TODO fix bug that keeps gps on when navigating back from measuring to start measure*/
 class MeasureViewModel() : ViewModel()
@@ -94,7 +95,7 @@ class MeasureViewModel() : ViewModel()
                     startMeasuring(context, navCon, it)
             }
         }
-        gps!!.subscribeToUpdates(context, 10, 0f, gpsListener!!)
+        gps!!.subscribeToUpdates(context, 500, 0f, gpsListener!!)
         //Need to call lookForGpsSignal because it has a max time it waits for a location
         //before giving up, this way we can abort if we don't find a signal in a
         //given time frame
@@ -171,7 +172,7 @@ class MeasureViewModel() : ViewModel()
     fun saveMeasurment(navCon: NavController, distance: Int, disc: String, course: String, hole:String)
     {
         val list = SharedPreferencesHelper.getList<Throw>(navCon.context, THROWS_KEY).toMutableList()
-        list.add(Throw(distance, startPos.latitude, startPos.longitude, disc, course, hole))
+        list.add(Throw(distance, startPos.latitude, startPos.longitude, disc, Date().time, course, hole))
         SharedPreferencesHelper.saveList(navCon.context, list, THROWS_KEY)
 
         navCon.navigateAndPopUp(MeasuredThrowsGraph.route, false)

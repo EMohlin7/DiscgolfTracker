@@ -37,6 +37,10 @@ class OngoingMatchGraph
         title = R.string.title_match,
         topNavIcon = Icons.Default.Close,
         actionIcons = List(1){Icons.Default.Check})))
+
+    object PostMatch : Screen("post match screen", ScaffoldState(topBar = TopBarState(
+        title = R.string.title_match,
+        topNavIcon = Icons.Default.ArrowBack)))
 }
 
 class HistoryGraph

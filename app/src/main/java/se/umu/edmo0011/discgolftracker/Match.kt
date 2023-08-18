@@ -1,5 +1,7 @@
 package se.umu.edmo0011.discgolftracker
 
-import java.util.Date
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-data class Match(val course: String, val date: Long, val holes: List<Hole>)
+@Parcelize
+data class Match(val course: String, val duration: Long, val dateMs: Long, val holes: List<Hole>) : Parcelable

@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import java.text.SimpleDateFormat
+import java.util.Date
 
 /*
 Help function to get a shared view model for every composable in a subgraph. Shamelessly copied
@@ -39,4 +41,19 @@ fun NavController.navigateAndPopUp(route: String, popUpTo: String, inclusive: Bo
             this.inclusive = inclusive
         }
     }
+}
+
+fun formatDurationMs(duration: Long): String
+{
+    val totSec = duration / 1000
+    val h = totSec / 3600
+    val m = (totSec / 60) % 60
+    val s = totSec % 60
+    return "$h:$m:$s"
+}
+
+fun formatDateMs(date: Long): String
+{
+    val dateForm = SimpleDateFormat("dd/MM-yyyy");
+    return dateForm.format(Date(date))
 }

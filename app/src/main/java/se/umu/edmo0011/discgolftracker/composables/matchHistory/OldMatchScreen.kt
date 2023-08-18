@@ -5,21 +5,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.MATCHES_KEY
-import se.umu.edmo0011.discgolftracker.Match
+import se.umu.edmo0011.discgolftracker.HistoryGraph
 import se.umu.edmo0011.discgolftracker.ScaffoldState
 
-import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
 import se.umu.edmo0011.discgolftracker.composables.match.ScoreSheet
-import se.umu.edmo0011.discgolftracker.composables.match.TAB_BAR_HEIGHT
+import se.umu.edmo0011.discgolftracker.sharedViewModel
+import se.umu.edmo0011.discgolftracker.viewModels.HistoryViewModel
 
 @Composable
 fun OldMatchScreen(navCon: NavController, pad: PaddingValues, scafState: ScaffoldState, date: Long)
 {
     scafState.topBar?.navAction = {navCon.navigateUp()}
 
-    val list = SharedPreferencesHelper.getList<Match>(navCon.context, MATCHES_KEY)
-    val match = list.find { it.date == date }
+    val model = navCon.currentBackStackEntry?.sharedViewModel<HistoryViewModel>(navCon, HistoryGraph.route) ?: return
+
+    //Check if the match exist in the already loaded matches, else load matches again and check
+    val match = model.loadedMatches.find { it.dateMs == date } ?: model.loadMatches(navCon.context).find { it.dateMs == date }
 
     if(match == null) {
         navCon.navigateUp()

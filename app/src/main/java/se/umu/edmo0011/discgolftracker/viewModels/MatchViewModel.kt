@@ -6,6 +6,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -14,6 +15,7 @@ import se.umu.edmo0011.discgolftracker.Hole
 import se.umu.edmo0011.discgolftracker.MATCHES_KEY
 import se.umu.edmo0011.discgolftracker.Match
 import se.umu.edmo0011.discgolftracker.MatchGraph
+import se.umu.edmo0011.discgolftracker.OngoingMatch
 import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
 import se.umu.edmo0011.discgolftracker.Screen
 import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
@@ -22,19 +24,31 @@ import java.time.LocalDateTime
 import java.util.Date
 import kotlin.math.max
 
-class MatchViewModel : ViewModel()
+class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
 {
     //var numPlayers by mutableStateOf(0); private set
     val PAR_DEFAULT = 3
 
     var players: List<String> = emptyList(); private set
 
-    private val holes = mutableListOf<Hole>()
+    private var holes = mutableListOf<Hole>()
     val playedHoles: List<Hole> get() = holes
     var currentHole by mutableStateOf(Hole(0,0, emptyList(), emptyList())); private set
 
     var selectedTab by mutableStateOf(0); private set
     val showScore by derivedStateOf { selectedTab == 1 }
+
+    private var ended = false
+
+    init {
+        val h = OngoingMatch.getInstance().holes
+        if(h != null)
+        {
+            players = h[0].players
+            holes = h.toMutableList()
+            currentHole = holes[holes.size-1]
+        }
+    }
 
     fun onNewMatch(navCon: NavController)
     {
@@ -46,6 +60,7 @@ class MatchViewModel : ViewModel()
         this.players = players
         currentHole = newHole(1)
         holes.add(currentHole)
+        OngoingMatch.getInstance().startTime = Date().time
         navCon.navigate(OngoingMatchGraph.Match.route)
         Log.w("Match", players.toString())
     }
@@ -85,6 +100,7 @@ class MatchViewModel : ViewModel()
 
     fun stopGame(navCon: NavController)
     {
+        ended = true
         navCon.navigateAndPopUp(MatchGraph.NewMatch.route, false)
     }
 
@@ -92,10 +108,11 @@ class MatchViewModel : ViewModel()
     {
         val list = SharedPreferencesHelper.getList<Match>(navCon.context, MATCHES_KEY).toMutableList()
         val date = Date().time
-        list.add(Match(course, date, holes))
+        val duration = date - (OngoingMatch.getInstance().startTime ?: 0)
+        list.add(Match(course, duration, date, holes))
         SharedPreferencesHelper.saveList<Match>(navCon.context, list, MATCHES_KEY)
 
-        navCon.navigateAndPopUp(HistoryGraph.Match.route+"/${date}", MatchGraph.NewMatch.route, false)
+        stopGame(navCon)
     }
 
     fun onSelectedTab(index: Int)
@@ -104,6 +121,11 @@ class MatchViewModel : ViewModel()
     }
 
     override fun onCleared() {
+        if(ended)
+            OngoingMatch.getInstance().clearMatch()
+        else
+            OngoingMatch.getInstance().holes = holes
+
         super.onCleared()
         Log.w("Match", "On cleared")
     }
