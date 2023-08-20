@@ -46,6 +46,8 @@ import se.umu.edmo0011.discgolftracker.ScaffoldState
 import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
 import se.umu.edmo0011.discgolftracker.THROWS_KEY
 import se.umu.edmo0011.discgolftracker.Throw
+import se.umu.edmo0011.discgolftracker.composables.general.AppList
+import se.umu.edmo0011.discgolftracker.composables.general.AppListItem
 import se.umu.edmo0011.discgolftracker.formatDateMs
 import se.umu.edmo0011.discgolftracker.formatDurationMs
 import java.lang.Math.min
@@ -58,7 +60,7 @@ fun MeasuredThrowsScreen(navCon: NavController, state: ScaffoldState)
         navCon.navigate(MeasureGraph.route)
     }
 
-    val l = SharedPreferencesHelper.getList<Throw>(navCon.context, THROWS_KEY)
+    val l = SharedPreferencesHelper.getList<Throw>(navCon.context, THROWS_KEY).sortedByDescending { it.distance }
     val list = remember { mutableStateListOf(*l.toTypedArray()) }
     fun onDelete(t: Throw)
     {
@@ -66,86 +68,38 @@ fun MeasuredThrowsScreen(navCon: NavController, state: ScaffoldState)
         SharedPreferencesHelper.saveList<Throw>(navCon.context, list, THROWS_KEY)
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .scrollable(ScrollableState { 0f }, Orientation.Vertical),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top) {
-        for (i in list) {
-            val d = formatDateMs(i.dateMs)
-            val items = listOf("Date: $d","Disc: ${i.disc}","Course: ${i.course}","Hole: ${i.hole}")
-            this.item {
-                AppListItem(title = "Distance: ${i.distance}", items = items, itemsPerRow = 2, onDelete = {onDelete(i)})
-                Spacer(Modifier.size(2.dp))
-            }
+    val content = mutableListOf<@Composable ()->Unit>()
+    for (i in list) {
+        val date = formatDateMs(i.dateMs)
+        val labels = listOf(
+            stringResource(id = R.string.Date),
+            stringResource(id = R.string.Disc),
+            stringResource(id = R.string.Course),
+            stringResource(id = R.string.Hole)
+        )
+
+        val distance = stringResource(id = R.string.Distance)+": ${i.distance}"
+        val items = listOf(date, i.disc, i.course, i.hole)
+        
+        content.add {
+            AppListItem(
+                title = distance,
+                items = items,
+                labels = labels,
+                itemsPerRow = 2,
+                onDelete = { onDelete(i) })
+            Spacer(Modifier.size(2.dp))
         }
     }
+    
+    AppList(content = content)
 }
 
-@Composable
-fun AppListItem(title: String, items: List<String>, itemsPerRow: Int, onDelete: ()->Unit)
-{
-    Card(Modifier.defaultMinSize(Dp.Unspecified, 60.dp)){
-        Row(modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp, 2.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.fillMaxWidth(0.85f).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
-                AppListItemItem(items = items, itemsPerRow = itemsPerRow)
-            }
 
-            AppListItemMenu(text = listOf(stringResource(id = R.string.Delete)), actions = listOf(onDelete))
-        }
-    }
-}
-
-@Composable
-fun AppListItemMenu(text: List<String>, actions: List<()->Unit>)
-{
-    var show by rememberSaveable { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { show = true }) {
-            Icon(Icons.Default.MoreVert, null)
-        }
-        DropdownMenu(expanded = show, onDismissRequest = { show = false }) {
-            for(i in text.indices)
-                DropdownMenuItem(text = { Text(text = text[i]) }, onClick = { show = false; actions[i].invoke() })
-        }
-    }
-}
-
-@Composable
-fun AppListItemItem(items: List<String>, itemsPerRow: Int)
-{
-    @Composable
-    fun Content(index: Int): Int
-    {
-        var ret = 0
-        for(i in index until min(items.size, index + itemsPerRow))
-        {
-            Text(text = items[i], modifier = Modifier.fillMaxWidth(1f/(itemsPerRow-i+index)))
-            ++ret
-        }
-        return ret
-    }
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        var i = 0
-        while (i < items.size)
-        {
-            Row(Modifier.fillMaxWidth().padding(bottom = 5.dp),verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                i += Content(i)
-            }
-        }
-    }
-}
 
 @Preview
 @Composable
 fun prev()
 {
-    AppListItem(title = "Preview", items = listOf("asd", "asda", "asdasda", "asdd"), itemsPerRow = 2, {})
+   // AppListItem(title = "Preview", items = listOf("asd", "asda", "asdasda", "asdd"), itemsPerRow = 2, {})
 }

@@ -162,4 +162,7 @@ class AppLocationListener(
     override fun onProviderEnabled(provider: String) {
         ope?.invoke(provider)
     }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+    }
 }

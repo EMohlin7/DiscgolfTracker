@@ -4,18 +4,25 @@ import android.Manifest
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.MeasureGraph
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
 import se.umu.edmo0011.discgolftracker.R
 import se.umu.edmo0011.discgolftracker.ScaffoldState
+import se.umu.edmo0011.discgolftracker.composables.general.BigButton
 import se.umu.edmo0011.discgolftracker.composables.general.DismissableAlert
 import se.umu.edmo0011.discgolftracker.composables.general.createPermissionLauncher
 import se.umu.edmo0011.discgolftracker.sharedViewModel
@@ -33,18 +40,27 @@ fun StartMeasureScreen(navCon: NavController, scafState: ScaffoldState)
         onNotGranted = { model.onNotGrantedPermission() }
     )
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Start by measuring the position from where you threw")
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = stringResource(id = R.string.start_measure_text), style = MaterialTheme.typography.displaySmall,
+            textAlign = TextAlign.Center)
+        Spacer(modifier = Modifier.size(30.dp))
         Box {
             if(!model.lookingForGps)
-                Button(
+                BigButton(text = stringResource(id = R.string.start_measure_button),
+                    textStyle = MaterialTheme.typography.displayMedium) {
+                    model.startGps(context, navCon,
+                        onNoPermission = {launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)})
+                }
+                /*Button(
                     onClick = {
                         model.startGps(context, navCon,
                             onNoPermission = {launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)})
                     }
                 ){
-                    Text(text = "This is the throwing position!")
-                }
+                    Text(text = stringResource(id = R.string.start_measure_button))
+                }*/
             else
                 CircularProgressIndicator()
         }

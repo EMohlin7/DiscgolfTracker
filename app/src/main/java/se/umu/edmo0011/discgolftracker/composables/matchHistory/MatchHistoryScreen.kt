@@ -23,7 +23,8 @@ import androidx.navigation.NavController
 import se.umu.edmo0011.discgolftracker.HistoryGraph
 import se.umu.edmo0011.discgolftracker.Match
 import se.umu.edmo0011.discgolftracker.R
-import se.umu.edmo0011.discgolftracker.composables.measuring.AppListItem
+import se.umu.edmo0011.discgolftracker.composables.general.AppList
+import se.umu.edmo0011.discgolftracker.composables.general.AppListItem
 import se.umu.edmo0011.discgolftracker.formatDateMs
 import se.umu.edmo0011.discgolftracker.formatDurationMs
 import se.umu.edmo0011.discgolftracker.sharedViewModel
@@ -36,42 +37,50 @@ fun MatchHistoryScreen(navCon: NavController)
 {
     val model = navCon.currentBackStackEntry?.sharedViewModel<HistoryViewModel>(navCon, HistoryGraph.route) ?: return
     var list by remember { mutableStateOf(model.loadMatches(navCon.context)) }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .scrollable(ScrollableState { 0f }, Orientation.Vertical),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top) {
-        for (m in list.sortedByDescending { it.dateMs }) {
-            this.item {
-                MatchHistoryListItem(match = m, onClick =  { navCon.navigate(HistoryGraph.Match.route + "/${m.dateMs}") },
-                    onDelete = {list = model.deleteMatch(navCon.context, m.dateMs)}
-                )
-            }
+
+    val content = MatchHistoryListContent(list = list,
+        onClick = { navCon.navigate(HistoryGraph.Match.route + "/${it.dateMs}") }) {
+        list = model.deleteMatch(navCon.context, it.dateMs)
+    }
+    AppList(content = content)
+}
+
+@Composable
+fun MatchHistoryListContent(list: List<Match>, onClick: (Match) -> Unit, onDelete: (Match) -> Unit): List<@Composable ()->Unit>
+{
+    val content = mutableListOf<@Composable ()->Unit>()
+    for (m in list.sortedByDescending { it.dateMs }) {
+        content.add {
+            MatchHistoryListItem(
+                match = m,
+                onClick = {onClick.invoke(m)},
+                onDelete = { onDelete.invoke(m) }
+            )
         }
     }
+    return content
 }
 
 @Composable
 fun MatchHistoryListItem(match: Match, onClick: ()->Unit, onDelete: ()->Unit)
 {
     val date = formatDateMs(match.dateMs)
-    val course = stringResource(id = R.string.Course)+": ${match.course}"
+    val labels = listOf(
+        stringResource(id = R.string.Course),
+        stringResource(id = R.string.Players),
+        stringResource(id = R.string.Duration)
+    )
 
-
-    val dur = formatDurationMs(match.duration)
-    val duration = stringResource(id = R.string.Duration)+": $dur"
-
-    var players = stringResource(id = R.string.Players)+": "
+    val duration = formatDurationMs(match.duration)
+    var players = ""
     //Don't add colon after last player
     for(i in 0 until match.holes[0].players.size-1)
         players += "${match.holes[0].players[i]}, "
     players += match.holes[0].players[match.holes[0].players.size-1]
 
-    val items = listOf(course, duration, players)
+    val items = listOf(match.course, players, duration)
     Box(modifier = Modifier.clickable { onClick.invoke() }){
-        AppListItem(title = date.toString(), items = items, itemsPerRow = 1, onDelete = onDelete)
+        AppListItem(title = date, items = items, labels = labels, itemsPerRow = 1, onDelete = onDelete)
     }
-    Spacer(Modifier.size(2.dp))
 }
 

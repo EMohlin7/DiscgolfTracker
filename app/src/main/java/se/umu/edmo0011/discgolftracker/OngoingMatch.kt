@@ -15,8 +15,14 @@ class OngoingMatch {
     }
     private constructor()
 
-    var holes: List<Hole>? = null
-    var startTime: Long? = null
+    var holes: List<Hole>? = null; private set
+    var startTime: Long? = null; private set
+
+    fun save(holes: List<Hole>, startTime: Long)
+    {
+        this.holes = holes
+        this.startTime = startTime
+    }
     fun clearMatch()
     {
         holes = null

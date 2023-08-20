@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.example.compose.DiscgolfTrackerTheme
 import se.umu.edmo0011.discgolftracker.composables.general.Fab
 import se.umu.edmo0011.discgolftracker.composables.general.TopBar
 import se.umu.edmo0011.discgolftracker.composables.match.MatchScreen
@@ -41,13 +42,9 @@ import se.umu.edmo0011.discgolftracker.composables.measuring.MeasuringScreen
 import se.umu.edmo0011.discgolftracker.composables.measuring.SaveMeasurementScreen
 import se.umu.edmo0011.discgolftracker.composables.measuring.StartMeasureScreen
 
-
-import se.umu.edmo0011.discgolftracker.ui.theme.DiscgolfTrackerTheme
-
 class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,7 +67,6 @@ class MainActivity : ComponentActivity() {
                         floatingActionButton = { Fab(state = scafState.value.fab) }) { pad->
 
                         NavHost(navController = navCon, startDestination = MatchGraph.route) {
-
                             matchGraph(navCon, pad, scafState)
                             historyGraph(navCon, pad, scafState)
                             measuredThrowsGraph(navCon, pad, scafState)
@@ -117,6 +113,8 @@ class MainActivity : ComponentActivity() {
     {
         navigation(startDestination = HistoryGraph.MatchHistory.route, route = HistoryGraph.route) {
             composable(HistoryGraph.MatchHistory.route,){Screen(HistoryGraph.MatchHistory, pad, scafState) {
+                //Disable back button
+                BackHandler(enabled = true) {}
                 MatchHistoryScreen(navCon = navCon)
             }}
 
@@ -133,6 +131,8 @@ class MainActivity : ComponentActivity() {
     {
         navigation(startDestination = MeasuredThrowsGraph.Throws.route, route = MeasuredThrowsGraph.route){
             composable(MeasuredThrowsGraph.Throws.route){Screen(MeasuredThrowsGraph.Throws, pad, scafState){
+                //Disable back button
+                BackHandler(enabled = true) {}
                 MeasuredThrowsScreen(navCon = navCon, scafState.value)
             } }
 

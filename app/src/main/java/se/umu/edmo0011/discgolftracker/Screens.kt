@@ -21,7 +21,7 @@ class MatchGraph
     {
         const val route: String = "match graph"
     }
-    object NewMatch : Screen("new match", ScaffoldState(topBar = TopBarState(title = R.string.New_match)))
+    object NewMatch : Screen("new match", ScaffoldState(topBar = TopBarState(title = R.string.app_name)))
 
 }
 

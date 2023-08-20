@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,15 +24,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import se.umu.edmo0011.discgolftracker.R
 import se.umu.edmo0011.discgolftracker.composables.general.AppPopup
+import se.umu.edmo0011.discgolftracker.composables.general.TextInput
 
 @Composable
 fun SaveMatchPopup(show: Boolean, onSave: (String)->Unit, onDismiss: ()->Unit)
 {
-    AppPopup(show = show, widthFraction = 1f, heightFraction = 0.6f, onDismiss = onDismiss) {
+    AppPopup(show = show, widthFraction = 1f, heightFraction = 0.45f, onDismiss = onDismiss) {
         SaveMatchPopupContent(onSave = onSave, onDismiss = onDismiss)
     }
 }
@@ -41,21 +44,28 @@ fun SaveMatchPopup(show: Boolean, onSave: (String)->Unit, onDismiss: ()->Unit)
 fun SaveMatchPopupContent(onSave: (String) -> Unit, onDismiss: () -> Unit)
 {
     var course by rememberSaveable { mutableStateOf("") }
-    IconButton(onClick = onDismiss) {
-        Icon(Icons.Default.Close, null)
-    }
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-        Text(text = "Save match", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.size(30.dp))
-        TextField(modifier = Modifier.fillMaxWidth(0.75f), value = course, onValueChange = {course = it},
-            placeholder =  { Text(text = stringResource(id = R.string.Course)) },
-            supportingText = { Text(text = "(${stringResource(id = R.string.optional)})") })
+    Column {
+        IconButton(onClick = onDismiss) {
+            Icon(Icons.Default.Close, null)
+        }
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround, horizontalAlignment = Alignment.CenterHorizontally){
+            Text(text = stringResource(id = R.string.Save_match), style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center)
 
-        Spacer(modifier = Modifier.size(30.dp))
-        IconButton(onClick = { onSave.invoke(course) }) {
-            Icon(Icons.Default.Check, null)
+            Text(text = stringResource(id = R.string.text_save_match),
+                textAlign = TextAlign.Center)
+
+            TextInput(modifier = Modifier.fillMaxWidth(0.75f), value = course, onValueChange = {course = it},
+                placeholder =  { Text(text = stringResource(id = R.string.Course)) },
+                supportingText = { Text(text = "(${stringResource(id = R.string.optional)})") })
+
+            Button(onClick = { onSave.invoke(course) }) {
+                Text(text = stringResource(id = R.string.Save))
+                //Icon(Icons.Default.Check, null)
+            }
         }
     }
+
 }
 
 @Preview

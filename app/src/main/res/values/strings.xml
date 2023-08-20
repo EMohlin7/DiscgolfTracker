@@ -1,26 +1,28 @@
 <resources>
-    <string name="app_name">Discgolf Tracker</string>
+    <string name="app_name">Disc Golf Tracker</string>
     <string name="title_measured_throws_screen">Measured Throws</string>
-    <string name="title_start_measure_screen">Start measuring throw</string>
-    <string name="title_measuring_screen">Measuring throw</string>
-    <string name="title_history_screen">Match history</string>
-    <string name="title_setup_match">Setup match</string>
+    <string name="title_start_measure_screen">Measure Throw</string>
+    <string name="title_measuring_screen">Measuring Throw</string>
+    <string name="title_save_throw">Save Throw</string>
+    <string name="title_history_screen">Match History</string>
+    <string name="title_setup_match">Setup Match</string>
     <string name="title_match">Match</string>
 
     <string name="Delete">Delete</string>
 
-    <string name="New_match">New match</string>
+    <string name="New_match">New Match</string>
+    <string name="Stop_match">Stop match</string>
 
     <string name="ok">OK</string>
 
     <string name="title_gps_not_granted">GPS permission needed</string>
-    <string name="text_gps_not_granted">This feature needs access to the GPS in order to function</string>
+    <string name="text_gps_not_granted">This feature needs access to the GPS in order to function.</string>
     <string name="title_gps_off">Location access needed</string>
     <string name="text_gps_off">This feature needs access to the phones location. Please
-        turn on location access in your phone settings</string>
+        turn on location access in your phone settings.</string>
     <string name="title_no_gps_signal">No GPS signal found</string>
     <string name="text_no_gps_signal">This feature needs access to GPS but was unable to find a signal,
-    please try again later</string>
+    please try again later.</string>
 
     <string name="Save">Save</string>
     <string name="optional">optional</string>
@@ -28,10 +30,32 @@
     <string name="Disc">Disc</string>
     <string name="Course">Course</string>
     <string name="Hole">Hole</string>
-
-    <string name="title_save_throw">Save</string>
-
+    <string name="Date">Date</string>
     <string name="Players">Players</string>
     <string name="Duration">Duration</string>
+    <string name="Score">Score</string>
+    <string name="Cancel">Cancel</string>
+
+
+    <string name="Save_match">Save match</string>
+    <string name="text_save_match">The match will be stopped and can be viewed in the match history.</string>
+    <string name="Dismiss_match">Dismiss match</string>
+    <string name="text_dismiss_match">Are you sure that you want to dismiss this match? The match
+        will be lost.</string>
+
+    <string name="start_measure_text">Stand at the throwing position.</string>
+    <string name="start_measure_button">Start</string>
+
+    <string name="measuring_text">Move to the disc.</string>
+    <string name="measuring_button">I am standing at the disc!</string>
+    <string name="Previous_hole">Prior hole</string>
+    <string name="Next_hole">Next hole</string>
+    <string name="Match">Match</string>
+    <string name="History">History</string>
+    <string name="Throws">Throws</string>
+    <string name="Create_match">Create match</string>
+    <string name="Par">Par</string>
+    <string name="Number_of_throws">Number of throws</string>
+    <string name="Current_hole">Current hole</string>
 
 </resources>
