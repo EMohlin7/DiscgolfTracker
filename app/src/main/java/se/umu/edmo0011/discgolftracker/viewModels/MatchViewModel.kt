@@ -1,5 +1,6 @@
 package se.umu.edmo0011.discgolftracker.viewModels
 
+import android.os.Parcelable
 import android.util.Log
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -7,6 +8,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
@@ -14,7 +16,6 @@ import se.umu.edmo0011.discgolftracker.Hole
 import se.umu.edmo0011.discgolftracker.MATCHES_KEY
 import se.umu.edmo0011.discgolftracker.Match
 import se.umu.edmo0011.discgolftracker.MatchGraph
-import se.umu.edmo0011.discgolftracker.OngoingMatch
 import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
 import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
 import se.umu.edmo0011.discgolftracker.navigateAndPopUp
@@ -39,9 +40,11 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
     private var ended = false
     var startTime: Long = 0; private set
 
+    //Restore state from saved state handle
     init {
-        val temp = state.get<Array<Hole>>(HOLES_KEY)
-        val h = temp?.toMutableList() ?: OngoingMatch.getInstance().holes
+
+        val temp : LiveData<ArrayList<Hole>> = state.getLiveData(HOLES_KEY, arrayListOf())
+        val h = temp.value?.toList() ?: emptyList()
         if(!h.isNullOrEmpty())
         {
             players = h[0].players
@@ -49,9 +52,8 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
             currentHoleIndex = holes.size-1
         }
 
-        val t = state.get<Long>(TIME_KEY) ?: OngoingMatch.getInstance().startTime
-        if(t != null)
-            startTime = t
+        val t = state.getLiveData<Long>(TIME_KEY)
+        startTime = t.value ?: 0
     }
 
     fun onNewMatch(navCon: NavController)
@@ -65,6 +67,8 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
         holes.add(Hole(1, PAR_DEFAULT, players, List(players.size){0}))
         currentHoleIndex = 0
         startTime = Date().time
+
+        state.set(TIME_KEY, startTime)
         navCon.navigate(OngoingMatchGraph.Match.route)
         Log.w("Match", players.toString())
     }
@@ -80,8 +84,9 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
     fun editHole(par: Int, throws: List<Int>)
     {
         holes[currentHoleIndex] = holes[currentHoleIndex].copy(par = par, throws = throws)
-    }
 
+        state.set(HOLES_KEY, arrayListOf<Hole>(*holes.toTypedArray()))
+    }
     fun nextHole()
     {
         setHole(currentHoleIndex + 1)
@@ -121,18 +126,12 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
     }
 
     override fun onCleared() {
+        super.onCleared()
         if(ended) {
-            OngoingMatch.getInstance().clearMatch()
-            state.remove<Array<Hole>>(HOLES_KEY)
+            state.remove<ArrayList<Hole>>(HOLES_KEY)
             state.remove<Long>(TIME_KEY)
         }
-        else {
-            OngoingMatch.getInstance().save(holes, startTime)
-            state.set(HOLES_KEY, holes.toTypedArray())
-            state.set(TIME_KEY, startTime)
-        }
 
-        super.onCleared()
         Log.w("Match", "On cleared")
     }
 }
