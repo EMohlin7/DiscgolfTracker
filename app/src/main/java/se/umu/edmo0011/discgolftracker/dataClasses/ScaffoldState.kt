@@ -1,4 +1,4 @@
-package se.umu.edmo0011.discgolftracker
+package se.umu.edmo0011.discgolftracker.dataClasses
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable

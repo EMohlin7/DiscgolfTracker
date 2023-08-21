@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,13 +34,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.Hole
-import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
-import se.umu.edmo0011.discgolftracker.ScaffoldState
+import se.umu.edmo0011.discgolftracker.dataClasses.Hole
+import se.umu.edmo0011.discgolftracker.dataClasses.ScaffoldState
 import se.umu.edmo0011.discgolftracker.composables.general.TextInput
-import se.umu.edmo0011.discgolftracker.sharedViewModel
+import se.umu.edmo0011.discgolftracker.misc.sharedViewModel
 import se.umu.edmo0011.discgolftracker.viewModels.MatchViewModel
 import se.umu.edmo0011.discgolftracker.R
+import se.umu.edmo0011.discgolftracker.graphs.OngoingMatchGraph
 
 const val TAB_BAR_HEIGHT = 48
 
@@ -63,13 +61,19 @@ fun MatchScreen(navCon: NavController, scafState: ScaffoldState, pad: PaddingVal
        showStopPop = false
     }
 
+    MatchScreenContent(model, pad)
+}
+
+@Composable
+fun MatchScreenContent(model: MatchViewModel, pad: PaddingValues)
+{
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
 
         MatchScreenTabBar(model.selectedTab, holeNumber = model.playedHoles[model.currentHoleIndex].number){
             model.onSelectedTab(it)
         }
-        
+
         if(!model.showScore)
             HoleInput(curHoleIndex = model.currentHoleIndex, holes = model.playedHoles,
                 onEdit = model::editHole, onNext = model::nextHole, onPrev = model::prevHole)
@@ -82,7 +86,7 @@ fun MatchScreen(navCon: NavController, scafState: ScaffoldState, pad: PaddingVal
 fun MatchScreenTabBar(selected: Int, holeNumber: Int, onSelect: (Int)->Unit)
 {
     val colors = arrayOf(MaterialTheme.colorScheme.onPrimary, MaterialTheme.colorScheme.onBackground)
-    val l = listOf<@Composable ()->Unit>(
+    val titles = listOf<@Composable ()->Unit>(
         {Text(text = stringResource(id = R.string.Hole)+" $holeNumber",
             color = if(selected == 0) colors[0] else colors[1])},
 
@@ -91,9 +95,11 @@ fun MatchScreenTabBar(selected: Int, holeNumber: Int, onSelect: (Int)->Unit)
     )
 
     val s = List<(Int)->Unit>(2){{onSelect.invoke(it)}}
-    TabBar(selected = selected, height = TAB_BAR_HEIGHT.dp, titles = l, onSelected = s)
+    TabBar(selected = selected, height = TAB_BAR_HEIGHT.dp, width = LocalConfiguration.current.screenWidthDp.dp,
+        titles = titles, onSelected = s)
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun HoleInput(curHoleIndex: Int, holes: List<Hole>, onEdit: (Int, List<Int>)->Unit, onNext: ()->Unit, onPrev: ()->Unit)
 {
@@ -102,7 +108,6 @@ fun HoleInput(curHoleIndex: Int, holes: List<Hole>, onEdit: (Int, List<Int>)->Un
         .fillMaxSize()
         .padding(vertical = 5.dp), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
-        //Text(text = stringResource(id = R.string.Hole)+" ${hole.number}", style = MaterialTheme.typography.displayMedium)
         Spacer(modifier = Modifier.size(10.dp))
         TextInput(
             modifier = Modifier.padding(bottom = 3.dp),
@@ -119,7 +124,8 @@ fun HoleInput(curHoleIndex: Int, holes: List<Hole>, onEdit: (Int, List<Int>)->Un
         Row(
             Modifier
                 .fillMaxWidth(0.85f)
-                .padding(5.dp),horizontalArrangement = Arrangement.SpaceBetween) {
+                .padding(5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween) {
             Button(onClick = {onPrev.invoke()}) {
                 Icon(Icons.Default.ArrowBack, null)
                 Text(text = stringResource(id = R.string.Previous_hole))

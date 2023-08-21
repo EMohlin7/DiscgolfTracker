@@ -1,4 +1,4 @@
-package se.umu.edmo0011.discgolftracker
+package se.umu.edmo0011.discgolftracker.misc
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,9 +12,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
-import androidx.core.location.LocationListenerCompat
-import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Executors
 
 //Singleton
@@ -49,7 +46,8 @@ class GpsHandler
         c: Context,
         minTimeMs: Long,
         minDistanceM: Float,
-        listener: AppLocationListener)
+        listener: AppLocationListener
+    )
         /*onProviderDisabled: ((String)->Unit)? = null,
         onProviderEnabled: ((String)->Unit)? = null,
         onLocationChanged: (Location)->Unit)*/

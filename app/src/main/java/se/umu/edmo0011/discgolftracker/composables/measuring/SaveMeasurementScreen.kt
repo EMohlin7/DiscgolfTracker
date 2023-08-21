@@ -4,14 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,15 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.MeasureGraph
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
 import se.umu.edmo0011.discgolftracker.R
-import se.umu.edmo0011.discgolftracker.ScaffoldState
+import se.umu.edmo0011.discgolftracker.dataClasses.ScaffoldState
 import se.umu.edmo0011.discgolftracker.composables.general.TextInput
-import se.umu.edmo0011.discgolftracker.sharedViewModel
+import se.umu.edmo0011.discgolftracker.graphs.MeasureGraph
+import se.umu.edmo0011.discgolftracker.misc.sharedViewModel
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaveMeasurementScreen(navCon: NavController, scafState: ScaffoldState)
 {
@@ -46,7 +42,6 @@ fun SaveMeasurementScreen(navCon: NavController, scafState: ScaffoldState)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaveMeasurementForm(distance: Int, onSave: (distance: Int, disc: String, course: String, hole: String)->Unit)
 {

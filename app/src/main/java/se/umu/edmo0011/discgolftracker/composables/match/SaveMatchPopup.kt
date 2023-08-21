@@ -61,7 +61,6 @@ fun SaveMatchPopupContent(onSave: (String) -> Unit, onDismiss: () -> Unit)
 
             Button(onClick = { onSave.invoke(course) }) {
                 Text(text = stringResource(id = R.string.Save))
-                //Icon(Icons.Default.Check, null)
             }
         }
     }

@@ -1,6 +1,5 @@
 package se.umu.edmo0011.discgolftracker.viewModels
 
-import android.os.Parcelable
 import android.util.Log
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -12,19 +11,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.Hole
-import se.umu.edmo0011.discgolftracker.MATCHES_KEY
-import se.umu.edmo0011.discgolftracker.Match
-import se.umu.edmo0011.discgolftracker.MatchGraph
-import se.umu.edmo0011.discgolftracker.OngoingMatchGraph
-import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
-import se.umu.edmo0011.discgolftracker.navigateAndPopUp
+import se.umu.edmo0011.discgolftracker.dataClasses.Hole
+import se.umu.edmo0011.discgolftracker.misc.MATCHES_KEY
+import se.umu.edmo0011.discgolftracker.dataClasses.Match
+import se.umu.edmo0011.discgolftracker.misc.SharedPreferencesHelper
+import se.umu.edmo0011.discgolftracker.graphs.MatchGraph
+import se.umu.edmo0011.discgolftracker.graphs.OngoingMatchGraph
+import se.umu.edmo0011.discgolftracker.misc.navigateAndPopUp
 import java.util.Date
 
 class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
 {
     private val HOLES_KEY = "match hole key"
+    private val INDEX_KEY = "index key"
     private val TIME_KEY = "time key"
+    private val TAB_KEY = "tab key"
     //var numPlayers by mutableStateOf(0); private set
     val PAR_DEFAULT = 3
 
@@ -42,8 +43,7 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
 
     //Restore state from saved state handle
     init {
-
-        val temp : LiveData<ArrayList<Hole>> = state.getLiveData(HOLES_KEY, arrayListOf())
+        val temp: LiveData<ArrayList<Hole>> = state.getLiveData(HOLES_KEY, arrayListOf())
         val h = temp.value?.toList() ?: emptyList()
         if(!h.isNullOrEmpty())
         {
@@ -52,8 +52,14 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
             currentHoleIndex = holes.size-1
         }
 
+        val i = state.getLiveData<Int>(INDEX_KEY)
+        currentHoleIndex = i.value ?: 0
+
         val t = state.getLiveData<Long>(TIME_KEY)
         startTime = t.value ?: 0
+
+        val tab = state.getLiveData<Int>(TAB_KEY)
+        selectedTab = tab.value ?: 0
     }
 
     fun onNewMatch(navCon: NavController)
@@ -65,9 +71,12 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
     {
         this.players = players
         holes.add(Hole(1, PAR_DEFAULT, players, List(players.size){0}))
-        currentHoleIndex = 0
-        startTime = Date().time
+        state.set(HOLES_KEY, arrayListOf<Hole>(*holes.toTypedArray()))
 
+        currentHoleIndex = 0
+        state.set(INDEX_KEY, currentHoleIndex)
+
+        startTime = Date().time
         state.set(TIME_KEY, startTime)
         navCon.navigate(OngoingMatchGraph.Match.route)
         Log.w("Match", players.toString())
@@ -75,10 +84,13 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
 
     private fun setHole(index: Int)
     {
-        if(index == holes.size)
-            holes.add(newHole(index+1))
+        if(index == holes.size) {
+            holes.add(newHole(index + 1))
+            state.set(HOLES_KEY, arrayListOf<Hole>(*holes.toTypedArray()))
+        }
 
         currentHoleIndex = if(index < 0) 0 else index
+        state.set(INDEX_KEY, currentHoleIndex)
     }
 
     fun editHole(par: Int, throws: List<Int>)
@@ -91,7 +103,6 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
     {
         setHole(currentHoleIndex + 1)
     }
-
 
     fun prevHole()
     {
@@ -123,6 +134,7 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
     fun onSelectedTab(index: Int)
     {
         selectedTab = index
+        state.set(TAB_KEY, selectedTab)
     }
 
     override fun onCleared() {
@@ -130,6 +142,8 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
         if(ended) {
             state.remove<ArrayList<Hole>>(HOLES_KEY)
             state.remove<Long>(TIME_KEY)
+            state.remove<Int>(INDEX_KEY)
+            state.remove<Int>(TAB_KEY)
         }
 
         Log.w("Match", "On cleared")

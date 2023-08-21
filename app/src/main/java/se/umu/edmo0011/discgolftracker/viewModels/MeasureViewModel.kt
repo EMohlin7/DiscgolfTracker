@@ -6,45 +6,27 @@ import android.location.LocationManager
 import android.os.Handler
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.AppLocationListener
-import se.umu.edmo0011.discgolftracker.GpsHandler
-import se.umu.edmo0011.discgolftracker.MeasureGraph
-import se.umu.edmo0011.discgolftracker.MeasuredThrowsGraph
-import se.umu.edmo0011.discgolftracker.ScaffoldState
-import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
-import se.umu.edmo0011.discgolftracker.THROWS_KEY
-import se.umu.edmo0011.discgolftracker.Throw
-import se.umu.edmo0011.discgolftracker.navigateAndPopUp
+import se.umu.edmo0011.discgolftracker.misc.AppLocationListener
+import se.umu.edmo0011.discgolftracker.misc.GpsHandler
+import se.umu.edmo0011.discgolftracker.misc.SharedPreferencesHelper
+import se.umu.edmo0011.discgolftracker.misc.THROWS_KEY
+import se.umu.edmo0011.discgolftracker.dataClasses.Throw
+import se.umu.edmo0011.discgolftracker.graphs.MeasureGraph
+import se.umu.edmo0011.discgolftracker.graphs.MeasuredThrowsGraph
+import se.umu.edmo0011.discgolftracker.misc.navigateAndPopUp
 import java.util.Date
 
-/*TODO fix bug that keeps gps on when navigating back from measuring to start measure*/
+
 class MeasureViewModel() : ViewModel()
 {
     private val MAX_GPS_WAIT: Long = 15000
+    private val GPS_INTERVAL: Long = 400
     private var gps: GpsHandler? = null
 
     private var gpsListener: AppLocationListener? = null
@@ -83,22 +65,24 @@ class MeasureViewModel() : ViewModel()
         }
         measurements = 0
 
+        //Create a new gps listener that controls the behaviour when we receive a position from the gps
         if(gpsListener == null) {
             gpsListener = createListener {
 
                 ++measurements
                 _currentPos.value = it
-                Log.w("Location", "${it.accuracy}")
                 //The first measurement is usually pretty bad, so we wait for it to settle before we start
                 //measuring
-                if (measurements == 3)
+                if (measurements == 2)
                     startMeasuring(context, navCon, it)
             }
         }
-        gps!!.subscribeToUpdates(context, 500, 0f, gpsListener!!)
+        gps!!.subscribeToUpdates(context, GPS_INTERVAL, 0f, gpsListener!!)
+
         //Need to call lookForGpsSignal because it has a max time it waits for a location
         //before giving up, this way we can abort if we don't find a signal in a
-        //given time frame
+        //given time frame. We don't care if it succeeds because the first measurement is most likely
+        //incorrect
         lookForGpsSignal(navCon, MAX_GPS_WAIT, ::onFailedSignal){}
     }
 
@@ -123,16 +107,17 @@ class MeasureViewModel() : ViewModel()
         return AppLocationListener(onProvDisabled, onProvEnabled, onLocation)
     }
 
+    //Called when we have successfully gotten a gps signal and can start measuring
     private fun startMeasuring(context: Context, navCon: NavController, location: Location)
     {
         lookingForGps = false
+        _startPos.value = location
+        _currentPos.value = location
         Log.w("Location", "On successfull start")
         val mainHandler = Handler(context.mainLooper)
         //navigate must be called on the main thread and this is called from the callback on
         //gps.getSubscribeToUpdates which isn't the main thread
         mainHandler.post{
-            _startPos.value = location
-            _currentPos.value = location
             navCon.navigate(MeasureGraph.Measuring.route)
         }
     }
@@ -169,6 +154,7 @@ class MeasureViewModel() : ViewModel()
         stopGps()
     }
 
+    //Called from saveMeasurementsScreen. Saves the throw and navigates back to the list of throws
     fun saveMeasurment(navCon: NavController, distance: Int, disc: String, course: String, hole:String)
     {
         val list = SharedPreferencesHelper.getList<Throw>(navCon.context, THROWS_KEY).toMutableList()

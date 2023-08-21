@@ -50,6 +50,7 @@ fun AppList(content: List<@Composable ()->Unit>)
             this.item {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     content[i].invoke()
+                    //Don't add a divider to the last element
                     if(i < content.size - 1)
                         Divider(Modifier.fillMaxWidth(0.93f))
                 }

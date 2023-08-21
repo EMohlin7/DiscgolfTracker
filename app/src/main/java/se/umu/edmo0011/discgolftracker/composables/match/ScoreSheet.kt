@@ -1,12 +1,10 @@
 package se.umu.edmo0011.discgolftracker.composables.match
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,19 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.times
-import se.umu.edmo0011.discgolftracker.Hole
+import se.umu.edmo0011.discgolftracker.dataClasses.Hole
 import se.umu.edmo0011.discgolftracker.R
+import se.umu.edmo0011.discgolftracker.misc.scoreString
+import se.umu.edmo0011.discgolftracker.misc.totScore
 import java.lang.Math.abs
-import kotlin.math.max
 import kotlin.math.min
 
 
@@ -50,40 +47,6 @@ fun ScoreSheet(holes: List<Hole>, labelWidth: Int, height: Dp)
         TotalScoreRow(height = eighteenHeight, labelWidth = labelWidth.dp, scoreWidth = width.dp, score = totScore(holes))
 
     }
-}
-
-fun totScore(holes: List<Hole>): List<Int>
-{
-    val list = mutableListOf<Int>()
-    for (i in holes[0].players.indices)
-    {
-        var score = 0
-        for(h in holes)
-        {
-            score += h.throws[i] - h.par
-        }
-        list.add(score)
-    }
-    return list
-}
-
-@Composable
-fun scoreColor(score: Int): Color
-{
-    if(score == 0)
-        return MaterialTheme.colorScheme.background
-
-    val color = if(score < 0)
-        //Green
-        0xff shl 8
-    else
-        //Red
-        0xff shl 16
-
-    //Alpha
-    val a = min((50 * abs(score)) , 0xff) shl 24
-
-    return Color(color or a)
 }
 
 //Shows each players score on each hole
@@ -105,8 +68,6 @@ fun ScoreSheetHoles(height: Dp, scoreWidth: Dp, labelWidth: Dp, holes: List<Hole
                     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center) {
                         Text(text = stringResource(id = R.string.Hole)+" ${holes[i].number}")
-                        /*Text(text = stringResource(id = R.string.Par)+" ${holes[i].par}",
-                            style = MaterialTheme.typography.bodySmall)*/
                     }
                 }
                 //The scores for that hole
@@ -122,13 +83,6 @@ fun ScoreSheetHoles(height: Dp, scoreWidth: Dp, labelWidth: Dp, holes: List<Hole
     }
 }
 
-fun scoreString(score: Int): String
-{
-    return if(score == 0)
-        "E"
-    else
-        score.toString()
-}
 
 //The bottom row of the score sheet. Shows the players total score
 @Composable
@@ -179,3 +133,26 @@ fun ScoreBox(width: Dp, color: Color, content: @Composable ()->Unit){
         content.invoke()
     }
 }
+
+
+@Composable
+fun scoreColor(score: Int): Color
+{
+    if(score == 0)
+        return MaterialTheme.colorScheme.background
+
+    val color = if(score < 0)
+    //Green
+        0xff shl 8
+    else
+    //Red
+        0xff shl 16
+
+    //Alpha
+    val a = min((50 * abs(score)) , 0xff) shl 24
+
+    return Color(color or a)
+}
+
+
+

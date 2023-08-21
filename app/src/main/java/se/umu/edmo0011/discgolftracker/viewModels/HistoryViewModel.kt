@@ -2,9 +2,9 @@ package se.umu.edmo0011.discgolftracker.viewModels
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import se.umu.edmo0011.discgolftracker.MATCHES_KEY
-import se.umu.edmo0011.discgolftracker.Match
-import se.umu.edmo0011.discgolftracker.SharedPreferencesHelper
+import se.umu.edmo0011.discgolftracker.misc.MATCHES_KEY
+import se.umu.edmo0011.discgolftracker.dataClasses.Match
+import se.umu.edmo0011.discgolftracker.misc.SharedPreferencesHelper
 
 class HistoryViewModel : ViewModel()
 {

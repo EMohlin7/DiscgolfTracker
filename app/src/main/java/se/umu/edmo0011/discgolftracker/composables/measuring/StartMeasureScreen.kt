@@ -2,12 +2,10 @@ package se.umu.edmo0011.discgolftracker.composables.measuring
 
 import android.Manifest
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,14 +16,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.MeasureGraph
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
 import se.umu.edmo0011.discgolftracker.R
-import se.umu.edmo0011.discgolftracker.ScaffoldState
+import se.umu.edmo0011.discgolftracker.dataClasses.ScaffoldState
 import se.umu.edmo0011.discgolftracker.composables.general.BigButton
 import se.umu.edmo0011.discgolftracker.composables.general.DismissableAlert
 import se.umu.edmo0011.discgolftracker.composables.general.createPermissionLauncher
-import se.umu.edmo0011.discgolftracker.sharedViewModel
+import se.umu.edmo0011.discgolftracker.graphs.MeasureGraph
+import se.umu.edmo0011.discgolftracker.misc.sharedViewModel
 
 @Composable
 fun StartMeasureScreen(navCon: NavController, scafState: ScaffoldState)
@@ -35,35 +33,40 @@ fun StartMeasureScreen(navCon: NavController, scafState: ScaffoldState)
     val model = navCon.currentBackStackEntry?.sharedViewModel<MeasureViewModel>(navCon, MeasureGraph.route) ?: return
     StartMeasureAlerts(model = model)
 
+    //Launcher used to ask for gps permission.
     val launcher = createPermissionLauncher(
         onGranted = { model.startGps(context, navCon,{}) },
         onNotGranted = { model.onNotGrantedPermission() }
     )
 
+    StartMeasureScreenContent(lookingForGps = model.lookingForGps) {
+        model.startGps(navCon.context, navCon){
+            //On no gps permission. If we don't have gps permission, ask for it.
+            launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+}
+
+@Composable
+fun StartMeasureScreenContent(lookingForGps: Boolean, onStart: ()->Unit)
+{
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = stringResource(id = R.string.start_measure_text), style = MaterialTheme.typography.displaySmall,
+
+        Text(text = stringResource(id = R.string.start_measure_text),
+            style = MaterialTheme.typography.displaySmall,
             textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.size(30.dp))
-        Box {
-            if(!model.lookingForGps)
-                BigButton(text = stringResource(id = R.string.start_measure_button),
-                    textStyle = MaterialTheme.typography.displayMedium) {
-                    model.startGps(context, navCon,
-                        onNoPermission = {launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)})
-                }
-                /*Button(
-                    onClick = {
-                        model.startGps(context, navCon,
-                            onNoPermission = {launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)})
-                    }
-                ){
-                    Text(text = stringResource(id = R.string.start_measure_button))
-                }*/
-            else
-                CircularProgressIndicator()
-        }
+
+        if(!lookingForGps)
+            BigButton(text = stringResource(id = R.string.start_measure_button),
+                textStyle = MaterialTheme.typography.displayMedium) {
+                onStart.invoke()
+            }
+
+        else
+            CircularProgressIndicator()
     }
 }
 

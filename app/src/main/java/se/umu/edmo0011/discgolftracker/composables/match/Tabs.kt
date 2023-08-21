@@ -24,18 +24,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TabBar(selected: Int, height: Dp, titles: List<@Composable ()->Unit>, onSelected: List<(Int)->Unit>)
+fun TabBar(selected: Int, height: Dp, width: Dp, titles: List<@Composable ()->Unit>, onSelected: List<(Int)->Unit>)
 {
-    Box (
-        Modifier
-            .fillMaxWidth()
-            .height(height)){
+    Box (Modifier.width(width).height(height)){
         Row (
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically){
             for(i in titles.indices)
             {
-                TabItem(selected = i == selected, width = LocalConfiguration.current.screenWidthDp.dp/titles.size, title = titles[i]) {
+                TabItem(selected = i == selected, width = width/titles.size,
+                    title = titles[i]) {
                     onSelected[i].invoke(i)
                 }
             }
@@ -65,5 +63,6 @@ fun TabBarPreview()
         mutableStateOf(0)
     }
     val l = List<@Composable ()->Unit>(2){ { Text(text = "$it") }}
-    TabBar(selected = selected, height = 60.dp, titles = l, onSelected = List<(Int)->Unit>(2){{selected = it}})
+    TabBar(selected = selected, height = 60.dp, width = LocalConfiguration.current.screenWidthDp.dp,
+        titles = l, onSelected = List<(Int)->Unit>(2){{selected = it}})
 }

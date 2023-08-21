@@ -1,4 +1,4 @@
-package se.umu.edmo0011.discgolftracker
+package se.umu.edmo0011.discgolftracker.misc
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import se.umu.edmo0011.discgolftracker.dataClasses.Hole
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -56,4 +57,27 @@ fun formatDateMs(date: Long): String
 {
     val dateForm = SimpleDateFormat("dd/MM-yyyy");
     return dateForm.format(Date(date))
+}
+
+fun totScore(holes: List<Hole>): List<Int>
+{
+    val list = mutableListOf<Int>()
+    for (i in holes[0].players.indices)
+    {
+        var score = 0
+        for(h in holes)
+        {
+            score += h.throws[i] - h.par
+        }
+        list.add(score)
+    }
+    return list
+}
+
+fun scoreString(score: Int): String
+{
+    return if(score == 0)
+        "E"
+    else
+        score.toString()
 }

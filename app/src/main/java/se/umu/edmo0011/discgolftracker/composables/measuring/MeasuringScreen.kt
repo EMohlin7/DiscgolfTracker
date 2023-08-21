@@ -1,13 +1,11 @@
 package se.umu.edmo0011.discgolftracker.composables.measuring
 
 import android.location.Location
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,21 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import se.umu.edmo0011.discgolftracker.MeasureGraph
 import se.umu.edmo0011.discgolftracker.R
-import se.umu.edmo0011.discgolftracker.ScaffoldState
+import se.umu.edmo0011.discgolftracker.dataClasses.ScaffoldState
 import se.umu.edmo0011.discgolftracker.composables.general.BigButton
+import se.umu.edmo0011.discgolftracker.graphs.MeasureGraph
 import se.umu.edmo0011.discgolftracker.viewModels.MeasureViewModel
-import se.umu.edmo0011.discgolftracker.sharedViewModel
+import se.umu.edmo0011.discgolftracker.misc.sharedViewModel
 import kotlin.math.roundToInt
 
 @Composable
 fun MeasuringScreen(navCon: NavController, scafState: ScaffoldState)
 {
     scafState.topBar?.navAction = {navCon.navigateUp()}
-    val context = navCon.context
     val model = navCon.currentBackStackEntry?.sharedViewModel<MeasureViewModel>(navCon, MeasureGraph.route) ?: return
-    Log.w("Location", "Compose Measurer Screen")
 
     Measurements(model.startPos, model.distance.roundToInt(), { model.navToSave(navCon) })
 }
@@ -51,5 +47,4 @@ fun Measurements(start: Location, distance: Int, onClickSave: ()->Unit)
             onClickSave.invoke()
         }
     }
-
 }
