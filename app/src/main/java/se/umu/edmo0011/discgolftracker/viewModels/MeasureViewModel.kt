@@ -113,7 +113,7 @@ class MeasureViewModel() : ViewModel()
         lookingForGps = false
         _startPos.value = location
         _currentPos.value = location
-        Log.w("Location", "On successfull start")
+        //Log.w("Location", "On successfull start")
         val mainHandler = Handler(context.mainLooper)
         //navigate must be called on the main thread and this is called from the callback on
         //gps.getSubscribeToUpdates which isn't the main thread
@@ -124,7 +124,7 @@ class MeasureViewModel() : ViewModel()
 
     private fun onFailedSignal()
     {
-        Log.w("Location", "On failed start")
+        //Log.w("Location", "On failed start")
         showFailedAlert = true
         stopGps()
     }
@@ -176,7 +176,7 @@ class MeasureViewModel() : ViewModel()
 
     override fun onCleared() {
         super.onCleared()
-        Log.w("Location", "onCleared")
+        //Log.w("Location", "onCleared")
         stopGps()
     }
 }

@@ -79,7 +79,7 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
         startTime = Date().time
         state.set(TIME_KEY, startTime)
         navCon.navigate(OngoingMatchGraph.Match.route)
-        Log.w("Match", players.toString())
+        //Log.w("Match", players.toString())
     }
 
     private fun setHole(index: Int)
@@ -146,6 +146,6 @@ class MatchViewModel(private val state: SavedStateHandle) : ViewModel()
             state.remove<Int>(TAB_KEY)
         }
 
-        Log.w("Match", "On cleared")
+        //Log.w("Match", "On cleared")
     }
 }
